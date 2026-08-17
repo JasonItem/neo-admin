@@ -17,9 +17,10 @@ type MediaPickerProps = {
   value?: string;
   onSelect: (asset: MediaAsset) => void | Promise<void>;
   triggerLabel?: string;
+  trigger?: React.ReactElement;
 };
 
-export function MediaPicker({ items, value, onSelect, triggerLabel = "从媒体库选择" }: MediaPickerProps) {
+export function MediaPicker({ items, value, onSelect, triggerLabel = "从媒体库选择", trigger }: MediaPickerProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
@@ -67,7 +68,9 @@ export function MediaPicker({ items, value, onSelect, triggerLabel = "从媒体�
     }
     setOpen(nextOpen);
   }}>
-    <DialogTrigger render={<Button type="button" variant="outline" />}><ImageIcon />{triggerLabel}</DialogTrigger>
+    <DialogTrigger render={trigger ?? <Button type="button" variant="outline" />}>
+      {!trigger && <><ImageIcon />{triggerLabel}</>}
+    </DialogTrigger>
     <DialogContent className="max-h-[85vh] gap-0 overflow-hidden p-0 sm:max-w-3xl">
       <DialogHeader className="border-b p-5">
         <DialogTitle>选择媒体图片</DialogTitle>

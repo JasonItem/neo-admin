@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ExternalLink, Save } from "lucide-react";
+import { ExternalLink, ImagePlus, Save } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -56,7 +56,7 @@ export function SiteSettingsForm({ initialValue, mediaItems }: { initialValue: S
       </CardContent></Card>
       <div className="space-y-4">
         <Card><CardHeader><CardTitle>网站状态</CardTitle><CardDescription>关闭后官网将显示维护提示，管理后台不受影响。</CardDescription></CardHeader><CardContent><div className="flex items-center justify-between rounded-lg border p-3"><div><p className="font-medium">对外开放</p><p className="text-xs text-muted-foreground">允许访客浏览企业官网</p></div><Switch checked={value.enabled} onCheckedChange={(checked) => set("enabled", checked)} /></div></CardContent></Card>
-        <Card><CardHeader><CardTitle>品牌 Logo</CardTitle><CardDescription>可直接从媒体库选择，也可以在选择器中快捷上传并使用。</CardDescription></CardHeader><CardContent>{value.logoUrl ? <Image src={value.logoUrl} alt="当前网站 Logo" width={320} height={80} unoptimized className="h-20 max-w-full rounded-lg border bg-muted object-contain p-3" /> : <div className="flex h-20 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">尚未设置 Logo</div>}<div className="mt-3 flex flex-wrap gap-2"><MediaPicker items={mediaItems} value={value.logoMediaId} onSelect={selectLogo} /><Button variant="ghost" nativeButton={false} render={<Link href="/cms/media" />}>管理媒体库</Button></div></CardContent></Card>
+        <Card><CardHeader><CardTitle>品牌 Logo</CardTitle><CardDescription>点击下方图片框，从媒体库选择或快捷上传 Logo。</CardDescription></CardHeader><CardContent><MediaPicker items={mediaItems} value={value.logoMediaId} onSelect={selectLogo} trigger={<button type="button" aria-label="选择品牌 Logo" className="group relative flex h-32 w-full overflow-hidden rounded-xl border border-dashed bg-muted/30 transition hover:border-primary/60 hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{value.logoUrl ? <><Image src={value.logoUrl} alt="当前网站 Logo" fill unoptimized sizes="400px" className="object-contain p-4 transition group-hover:opacity-70" /><span className="absolute inset-0 grid place-items-center bg-background/60 opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100"><span className="flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm font-medium shadow-sm"><ImagePlus className="size-4" />更换图片</span></span></> : <span className="m-auto flex flex-col items-center gap-2 text-sm text-muted-foreground"><span className="grid size-10 place-items-center rounded-full border bg-background"><ImagePlus className="size-5" /></span><span className="font-medium text-foreground">选择或上传 Logo</span><span className="text-xs">支持 JPG、PNG、WebP、GIF</span></span>}</button>} /></CardContent></Card>
       </div>
     </div>
     <Card><CardHeader><CardTitle>搜索引擎优化</CardTitle><CardDescription>用于浏览器标题和搜索引擎摘要。</CardDescription></CardHeader><CardContent className="grid gap-4">
