@@ -8,6 +8,7 @@ import {
   saveCmsContentAction,
 } from "@/app/actions/cms-content";
 import { ImagePicker } from "@/components/cms/media-picker";
+import { CmsFormField, CmsPickerField } from "@/components/cms/cms-form-field";
 import type { MediaAsset } from "@/components/cms/media-types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -144,13 +145,18 @@ export function ContentManager({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap justify-between gap-3">
-        <div className="flex gap-2">
-          <Input
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-            placeholder={`新增${label}分类`}
-            className="w-48"
-          />
+        <div className="flex items-end gap-2">
+          <CmsFormField
+            label={`${label}分类`}
+            description={`新分类创建后可用于组织${label}。`}
+          >
+            <Input
+              value={categoryName}
+              onChange={(e) => setCategoryName(e.target.value)}
+              placeholder={`新增${label}分类`}
+              className="w-48"
+            />
+          </CmsFormField>
           <Button variant="outline" onClick={addCategory} disabled={pending}>
             添加分类
           </Button>
@@ -218,49 +224,67 @@ export function ContentManager({
           </DialogHeader>
           {editing && (
             <div className="grid gap-3 sm:grid-cols-2">
-              <Input
-                placeholder="标题"
-                value={editing.title}
-                onChange={(e) =>
-                  setEditing({ ...editing, title: e.target.value })
-                }
-              />
-              <Input
-                placeholder="访问路径，如 company-news"
-                value={editing.slug}
-                onChange={(e) =>
-                  setEditing({ ...editing, slug: e.target.value })
-                }
-              />
-              <select
-                className="h-9 rounded-lg border bg-background px-3"
-                value={editing.categoryId}
-                onChange={(e) =>
-                  setEditing({ ...editing, categoryId: e.target.value })
-                }
+              <CmsFormField label={`${label}标题`}>
+                <Input
+                  placeholder="标题"
+                  value={editing.title}
+                  onChange={(e) =>
+                    setEditing({ ...editing, title: e.target.value })
+                  }
+                />
+              </CmsFormField>
+              <CmsFormField
+                label="访问路径"
+                description={`生成${label}详情页地址，仅支持小写字母、数字和短横线。`}
               >
-                <option value="">未分类</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="h-9 rounded-lg border bg-background px-3"
-                value={editing.status}
-                onChange={(e) =>
-                  setEditing({
-                    ...editing,
-                    status: e.target.value as typeof editing.status,
-                  })
-                }
+                <Input
+                  placeholder="访问路径，如 company-news"
+                  value={editing.slug}
+                  onChange={(e) =>
+                    setEditing({ ...editing, slug: e.target.value })
+                  }
+                />
+              </CmsFormField>
+              <CmsFormField label={`${label}分类`}>
+                <select
+                  className="h-9 rounded-lg border bg-background px-3"
+                  value={editing.categoryId}
+                  onChange={(e) =>
+                    setEditing({ ...editing, categoryId: e.target.value })
+                  }
+                >
+                  <option value="">未分类</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </CmsFormField>
+              <CmsFormField
+                label="发布状态"
+                description="只有已发布内容会出现在前台列表区块中。"
               >
-                <option value="DRAFT">草稿</option>
-                <option value="PUBLISHED">发布</option>
-                <option value="OFFLINE">下线</option>
-              </select>
-              <div className="sm:col-span-2">
+                <select
+                  className="h-9 rounded-lg border bg-background px-3"
+                  value={editing.status}
+                  onChange={(e) =>
+                    setEditing({
+                      ...editing,
+                      status: e.target.value as typeof editing.status,
+                    })
+                  }
+                >
+                  <option value="DRAFT">草稿</option>
+                  <option value="PUBLISHED">发布</option>
+                  <option value="OFFLINE">下线</option>
+                </select>
+              </CmsFormField>
+              <CmsFormField
+                label={`${label}摘要`}
+                description="显示在前台列表卡片中，用于快速介绍内容。"
+                className="sm:col-span-2"
+              >
                 <Textarea
                   placeholder="摘要"
                   value={editing.summary}
@@ -268,8 +292,12 @@ export function ContentManager({
                     setEditing({ ...editing, summary: e.target.value })
                   }
                 />
-              </div>
-              <div className="sm:col-span-2">
+              </CmsFormField>
+              <CmsFormField
+                label={`${label}正文`}
+                description={`访客打开${label}详情页后阅读的完整内容。`}
+                className="sm:col-span-2"
+              >
                 <Textarea
                   rows={10}
                   placeholder="正文内容"
@@ -278,22 +306,37 @@ export function ContentManager({
                     setEditing({ ...editing, body: e.target.value })
                   }
                 />
-              </div>
-              <ImagePicker
-                items={mediaItems}
-                value={editing.coverMediaId}
-                onSelect={(asset) =>
-                  setEditing({ ...editing, coverMediaId: asset.id })
-                }
-              />
-              <Input
-                placeholder="SEO 标题"
-                value={editing.seoTitle}
-                onChange={(e) =>
-                  setEditing({ ...editing, seoTitle: e.target.value })
-                }
-              />
-              <div className="sm:col-span-2">
+              </CmsFormField>
+              <CmsPickerField
+                label={`${label}封面图`}
+                description={`显示在首页和${label}列表卡片中，可从媒体库复用已有图片。`}
+              >
+                <ImagePicker
+                  items={mediaItems}
+                  value={editing.coverMediaId}
+                  onSelect={(asset) =>
+                    setEditing({ ...editing, coverMediaId: asset.id })
+                  }
+                  triggerLabel={`选择${label}封面`}
+                />
+              </CmsPickerField>
+              <CmsFormField
+                label="SEO 标题"
+                description="显示在浏览器标题和搜索结果标题中。"
+              >
+                <Input
+                  placeholder="SEO 标题"
+                  value={editing.seoTitle}
+                  onChange={(e) =>
+                    setEditing({ ...editing, seoTitle: e.target.value })
+                  }
+                />
+              </CmsFormField>
+              <CmsFormField
+                label="SEO 描述"
+                description="搜索引擎结果中可能展示的内容摘要。"
+                className="sm:col-span-2"
+              >
                 <Textarea
                   placeholder="SEO 描述"
                   value={editing.seoDescription}
@@ -301,7 +344,7 @@ export function ContentManager({
                     setEditing({ ...editing, seoDescription: e.target.value })
                   }
                 />
-              </div>
+              </CmsFormField>
               <div className="sm:col-span-2 flex justify-end">
                 <Button onClick={save} disabled={pending}>
                   <Save />

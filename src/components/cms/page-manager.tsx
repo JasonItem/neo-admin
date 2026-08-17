@@ -5,6 +5,7 @@ import { ArrowDown, ArrowUp, Copy, Plus, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { saveCmsPageAction } from "@/app/actions/cms-content";
 import { ImagePicker } from "@/components/cms/media-picker";
+import { CmsFormField, CmsPickerField } from "@/components/cms/cms-form-field";
 import type { MediaAsset } from "@/components/cms/media-types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -197,57 +198,85 @@ export function PageManager({
           {editing && (
             <div className="space-y-5">
               <div className="grid gap-3 sm:grid-cols-2">
-                <Input
-                  placeholder="页面标题"
-                  value={editing.title}
-                  onChange={(e) =>
-                    setEditing({ ...editing, title: e.target.value })
-                  }
-                />
-                <Input
-                  placeholder="访问路径，如 about-us"
-                  value={editing.slug}
-                  onChange={(e) =>
-                    setEditing({ ...editing, slug: e.target.value })
-                  }
-                />
-                <Textarea
-                  placeholder="页面摘要"
-                  value={editing.summary}
-                  onChange={(e) =>
-                    setEditing({ ...editing, summary: e.target.value })
-                  }
-                />
-                <div className="flex items-center justify-between rounded-lg border px-3">
-                  <span className="text-sm">设为首页</span>
-                  <Switch
-                    checked={editing.isHome}
-                    onCheckedChange={(isHome) =>
-                      setEditing({ ...editing, isHome })
+                <CmsFormField label="页面标题">
+                  <Input
+                    placeholder="页面标题"
+                    value={editing.title}
+                    onChange={(e) =>
+                      setEditing({ ...editing, title: e.target.value })
                     }
                   />
-                </div>
-                <select
-                  className="h-9 rounded-lg border bg-background px-3"
-                  value={editing.status}
-                  onChange={(e) =>
-                    setEditing({
-                      ...editing,
-                      status: e.target.value as typeof editing.status,
-                    })
-                  }
+                </CmsFormField>
+                <CmsFormField
+                  label="访问路径"
+                  description="用于生成页面地址，例如填写 about-us 后可通过 /about-us 访问。"
                 >
-                  <option value="DRAFT">草稿</option>
-                  <option value="PUBLISHED">发布</option>
-                  <option value="OFFLINE">下线</option>
-                </select>
-                <ImagePicker
-                  items={mediaItems}
-                  value={editing.coverMediaId}
-                  onSelect={(asset) =>
-                    setEditing({ ...editing, coverMediaId: asset.id })
-                  }
-                />
+                  <Input
+                    placeholder="访问路径，如 about-us"
+                    value={editing.slug}
+                    onChange={(e) =>
+                      setEditing({ ...editing, slug: e.target.value })
+                    }
+                  />
+                </CmsFormField>
+                <CmsFormField
+                  label="页面摘要"
+                  description="用于后台识别页面，也可作为搜索引擎的默认描述。"
+                >
+                  <Textarea
+                    placeholder="页面摘要"
+                    value={editing.summary}
+                    onChange={(e) =>
+                      setEditing({ ...editing, summary: e.target.value })
+                    }
+                  />
+                </CmsFormField>
+                <CmsPickerField
+                  label="首页设置"
+                  description="启用后该页面会在网站根地址 / 展示，并自动取消其他首页。"
+                >
+                  <div className="flex items-center justify-between rounded-lg border px-3 py-2">
+                    <span className="text-sm">将此页面设为网站首页</span>
+                    <Switch
+                      checked={editing.isHome}
+                      onCheckedChange={(isHome) =>
+                        setEditing({ ...editing, isHome })
+                      }
+                    />
+                  </div>
+                </CmsPickerField>
+                <CmsFormField
+                  label="发布状态"
+                  description="只有“发布”状态的页面可以被访客访问。"
+                >
+                  <select
+                    className="h-9 rounded-lg border bg-background px-3"
+                    value={editing.status}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        status: e.target.value as typeof editing.status,
+                      })
+                    }
+                  >
+                    <option value="DRAFT">草稿</option>
+                    <option value="PUBLISHED">发布</option>
+                    <option value="OFFLINE">下线</option>
+                  </select>
+                </CmsFormField>
+                <CmsPickerField
+                  label="页面封面图"
+                  description="用于页面列表、分享卡片或后续模板中的页面主图，不是区块背景图。"
+                >
+                  <ImagePicker
+                    items={mediaItems}
+                    value={editing.coverMediaId}
+                    onSelect={(asset) =>
+                      setEditing({ ...editing, coverMediaId: asset.id })
+                    }
+                    triggerLabel="选择页面封面"
+                  />
+                </CmsPickerField>
               </div>
               <div>
                 <div className="mb-3 flex flex-wrap gap-2">
@@ -318,29 +347,42 @@ export function PageManager({
                             </Button>
                           </div>
                         </div>
-                        <Input
-                          placeholder="区块标题"
-                          value={block.title ?? ""}
-                          onChange={(e) =>
-                            patchBlock(block.id, { title: e.target.value })
-                          }
-                        />
-                        <Textarea
-                          rows={4}
-                          placeholder="区块内容"
-                          value={block.content ?? ""}
-                          onChange={(e) =>
-                            patchBlock(block.id, { content: e.target.value })
-                          }
-                        />
-                        {["HERO", "RICH_TEXT", "CTA"].includes(block.type) && (
-                          <ImagePicker
-                            items={mediaItems}
-                            value={block.mediaId}
-                            onSelect={(asset) => {
-                              patchBlock(block.id, { mediaId: asset.id });
-                            }}
+                        <CmsFormField label="区块标题">
+                          <Input
+                            placeholder="区块标题"
+                            value={block.title ?? ""}
+                            onChange={(e) =>
+                              patchBlock(block.id, { title: e.target.value })
+                            }
                           />
+                        </CmsFormField>
+                        <CmsFormField
+                          label="区块正文"
+                          description="该文字会直接显示在当前页面区块中。"
+                        >
+                          <Textarea
+                            rows={4}
+                            placeholder="区块内容"
+                            value={block.content ?? ""}
+                            onChange={(e) =>
+                              patchBlock(block.id, { content: e.target.value })
+                            }
+                          />
+                        </CmsFormField>
+                        {["HERO", "RICH_TEXT", "CTA"].includes(block.type) && (
+                          <CmsPickerField
+                            label="区块配图"
+                            description="仅作用于当前区块；首屏区块中会作为背景图，图文区块中会作为内容配图。"
+                          >
+                            <ImagePicker
+                              items={mediaItems}
+                              value={block.mediaId}
+                              onSelect={(asset) => {
+                                patchBlock(block.id, { mediaId: asset.id });
+                              }}
+                              triggerLabel="选择区块配图"
+                            />
+                          </CmsPickerField>
                         )}
                       </CardContent>
                     </Card>
@@ -348,20 +390,30 @@ export function PageManager({
                 </div>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
-                <Input
-                  placeholder="SEO 标题"
-                  value={editing.seoTitle}
-                  onChange={(e) =>
-                    setEditing({ ...editing, seoTitle: e.target.value })
-                  }
-                />
-                <Input
-                  placeholder="SEO 描述"
-                  value={editing.seoDescription}
-                  onChange={(e) =>
-                    setEditing({ ...editing, seoDescription: e.target.value })
-                  }
-                />
+                <CmsFormField
+                  label="SEO 标题"
+                  description="显示在浏览器标题和搜索结果标题中。"
+                >
+                  <Input
+                    placeholder="SEO 标题"
+                    value={editing.seoTitle}
+                    onChange={(e) =>
+                      setEditing({ ...editing, seoTitle: e.target.value })
+                    }
+                  />
+                </CmsFormField>
+                <CmsFormField
+                  label="SEO 描述"
+                  description="搜索引擎结果中可能展示的页面摘要。"
+                >
+                  <Input
+                    placeholder="SEO 描述"
+                    value={editing.seoDescription}
+                    onChange={(e) =>
+                      setEditing({ ...editing, seoDescription: e.target.value })
+                    }
+                  />
+                </CmsFormField>
               </div>
               <div className="flex justify-end">
                 <Button disabled={pending} onClick={save}>
