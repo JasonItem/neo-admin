@@ -9,5 +9,5 @@ export type MediaAsset = {
   uploaderName: string;
   uploaderUsername: string;
   url: string;
-  isLogo?: boolean;
+  isInUse?: boolean;
 };

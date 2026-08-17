@@ -328,14 +328,9 @@ export function MediaLibrary({ items: initialItems }: { items: MediaAsset[] }) {
                       <div className="flex min-w-0 items-center gap-3">
                         <MediaThumb item={item} compact />
                         <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="max-w-64 truncate font-medium">
-                              {item.originalName}
-                            </p>
-                            {item.isLogo && (
-                              <Badge variant="secondary">网站 Logo</Badge>
-                            )}
-                          </div>
+                          <p className="max-w-64 truncate font-medium">
+                            {item.originalName}
+                          </p>
                           <p className="max-w-72 truncate text-xs text-muted-foreground">
                             {item.altText || "暂无说明"}
                           </p>
@@ -570,7 +565,7 @@ function RowMenu({
         <DropdownMenuSeparator />
         <DropdownMenuItem
           variant="destructive"
-          disabled={item.isLogo}
+          disabled={item.isInUse}
           onClick={onDelete}
         >
           <Trash2 />
