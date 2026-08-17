@@ -1,7 +1,21 @@
 "use client";
 
 import * as React from "react";
-import { Building2, CircleGauge, FileClock, Globe2, Images, MenuSquare, ShieldCheck, Users } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  Building2,
+  CircleGauge,
+  FileClock,
+  Globe2,
+  Images,
+  ListTree,
+  MenuSquare,
+  Newspaper,
+  Package,
+  PanelsTopLeft,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 import { useDemoStore } from "@/components/demo/demo-store";
 import { NavMain } from "@/components/layout/nav-main";
 import { NavUser } from "@/components/layout/nav-user";
@@ -25,6 +39,11 @@ const icons = {
   FileClock,
   Globe2,
   Images,
+  PanelsTopLeft,
+  ListTree,
+  Newspaper,
+  Package,
+  BriefcaseBusiness,
 };
 export function AppSidebar({
   items,
@@ -57,7 +76,13 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher workspaces={workspaces} activeWorkspace={activeWorkspace} onChange={onWorkspaceChange} onCreate={onCreateWorkspace} onManage={onManageWorkspace} />
+        <TeamSwitcher
+          workspaces={workspaces}
+          activeWorkspace={activeWorkspace}
+          onChange={onWorkspaceChange}
+          onCreate={onCreateWorkspace}
+          onManage={onManageWorkspace}
+        />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navItems} />

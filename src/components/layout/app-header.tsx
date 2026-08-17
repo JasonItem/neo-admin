@@ -40,10 +40,19 @@ const pageNames: Record<string, string> = {
   "/system/login-logs": "登录日志",
   "/cms/site": "站点设置",
   "/cms/media": "媒体库",
+  "/cms/pages": "页面管理",
+  "/cms/navigation": "栏目导航",
+  "/cms/articles": "文章新闻",
+  "/cms/products": "产品管理",
+  "/cms/cases": "案例管理",
   "/account/profile": "账户设置",
   "/account/password": "账户设置",
 };
-export function HeaderActions({ appearanceControl }: { appearanceControl?: React.ReactNode }) {
+export function HeaderActions({
+  appearanceControl,
+}: {
+  appearanceControl?: React.ReactNode;
+}) {
   const demo = useDemoStore();
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
@@ -80,31 +89,26 @@ export function HeaderActions({ appearanceControl }: { appearanceControl?: React
           })),
       ].slice(0, 8)
     : [];
-  return <div className="ml-auto flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSearchOpen(true)}
-          >
-            <Search />
-            <span className="sr-only">全局搜索</span>
-          </Button>
-          {appearanceControl}
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={<Button variant="ghost" size="icon" />}
-            >
-              <Bell />
-              <span className="sr-only">通知</span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-72 p-3">
-              <p className="text-sm font-medium">通知</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                当前没有新的系统通知
-              </p>
-            </DropdownMenuContent>
-          </DropdownMenu>
-      
+  return (
+    <div className="ml-auto flex items-center gap-1">
+      <Button variant="ghost" size="icon" onClick={() => setSearchOpen(true)}>
+        <Search />
+        <span className="sr-only">全局搜索</span>
+      </Button>
+      {appearanceControl}
+      <DropdownMenu>
+        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
+          <Bell />
+          <span className="sr-only">通知</span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-72 p-3">
+          <p className="text-sm font-medium">通知</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            当前没有新的系统通知
+          </p>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
@@ -147,16 +151,41 @@ export function HeaderActions({ appearanceControl }: { appearanceControl?: React
           </div>
         </DialogContent>
       </Dialog>
-    </div>;
+    </div>
+  );
 }
 
-export function AppHeader({ showSidebarTrigger = true, actions }: { showSidebarTrigger?: boolean; actions?: React.ReactNode }) {
+export function AppHeader({
+  showSidebarTrigger = true,
+  actions,
+}: {
+  showSidebarTrigger?: boolean;
+  actions?: React.ReactNode;
+}) {
   const pathname = usePathname();
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
       <div className="mx-auto flex w-full max-w-[1500px] flex-1 items-center gap-2 px-4 md:px-6 lg:px-8 2xl:px-12">
-        {showSidebarTrigger && <><SidebarTrigger className="-ml-1" /><Separator orientation="vertical" className="mr-2 data-vertical:h-4 data-vertical:self-auto" /></>}
-        <Breadcrumb><BreadcrumbList><BreadcrumbItem className="hidden md:block"><BreadcrumbLink href="/dashboard">NeoAdmin</BreadcrumbLink></BreadcrumbItem><BreadcrumbSeparator className="hidden md:block" /><BreadcrumbItem><BreadcrumbPage>{pageNames[pathname] ?? "工作台"}</BreadcrumbPage></BreadcrumbItem></BreadcrumbList></Breadcrumb>
+        {showSidebarTrigger && (
+          <>
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-vertical:h-4 data-vertical:self-auto"
+            />
+          </>
+        )}
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem className="hidden md:block">
+              <BreadcrumbLink href="/dashboard">NeoAdmin</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="hidden md:block" />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{pageNames[pathname] ?? "工作台"}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         {actions}
       </div>
     </header>
