@@ -13,7 +13,7 @@ import {
   Pencil,
   Search,
   Trash2,
-  Upload,
+  Video,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -82,13 +82,15 @@ const formatDate = (value: string) => {
 const typeOf = (item: MediaAsset) =>
   item.mimeType.startsWith("image/")
     ? "图片"
-    : item.mimeType === "application/pdf"
-      ? "PDF"
-      : item.mimeType.includes("word") ||
-          item.mimeType.includes("sheet") ||
-          item.mimeType.includes("excel")
-        ? "文档"
-        : "其他";
+    : item.mimeType.startsWith("video/")
+      ? "视频"
+      : item.mimeType === "application/pdf"
+        ? "PDF"
+        : item.mimeType.includes("word") ||
+            item.mimeType.includes("sheet") ||
+            item.mimeType.includes("excel")
+          ? "文档"
+          : "其他";
 const FileIcon = ({
   item,
   className,
@@ -98,6 +100,8 @@ const FileIcon = ({
 }) =>
   item.mimeType.startsWith("image/") ? (
     <FileImage className={className} />
+  ) : item.mimeType.startsWith("video/") ? (
+    <Video className={className} />
   ) : item.mimeType === "application/pdf" ? (
     <FileText className={className} />
   ) : (
@@ -106,6 +110,7 @@ const FileIcon = ({
 
 export function MediaLibrary({ items: initialItems }: { items: MediaAsset[] }) {
   const imageInputRef = React.useRef<HTMLInputElement>(null);
+  const videoInputRef = React.useRef<HTMLInputElement>(null);
   const documentInputRef = React.useRef<HTMLInputElement>(null);
   const [items, setItems] = React.useState(initialItems);
   const [query, setQuery] = React.useState("");
@@ -194,6 +199,16 @@ export function MediaLibrary({ items: initialItems }: { items: MediaAsset[] }) {
         }}
       />
       <input
+        ref={videoInputRef}
+        className="hidden"
+        type="file"
+        accept="video/mp4,video/webm,video/quicktime"
+        onChange={(event) => {
+          upload(event.target.files?.[0]);
+          event.target.value = "";
+        }}
+      />
+      <input
         ref={documentInputRef}
         className="hidden"
         type="file"
@@ -214,15 +229,17 @@ export function MediaLibrary({ items: initialItems }: { items: MediaAsset[] }) {
             onClick={() => imageInputRef.current?.click()}
           />
           <QuickAction
+            icon={Video}
+            title="上传视频"
+            description="MP4、WebM 或 MOV，最大 100MB"
+            onClick={() => videoInputRef.current?.click()}
+          />
+          <QuickAction
             icon={FileText}
             title="上传文档"
             description="PDF、Word 或 Excel"
             onClick={() => documentInputRef.current?.click()}
           />
-          <div className="hidden rounded-xl border border-dashed p-4 text-sm text-muted-foreground xl:flex xl:items-center xl:gap-3">
-            <Upload className="size-5" />
-            <span>文件保存在服务器本地，单个文件最大 10MB</span>
-          </div>
         </div>
       </section>
 
@@ -263,7 +280,7 @@ export function MediaLibrary({ items: initialItems }: { items: MediaAsset[] }) {
         </div>
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap gap-1">
-            {["全部", "图片", "文档", "PDF", "其他"].map((type) => (
+            {["全部", "图片", "视频", "文档", "PDF", "其他"].map((type) => (
               <Button
                 key={type}
                 type="button"
@@ -512,6 +529,22 @@ function MediaThumb({
         unoptimized
         sizes={compact ? "40px" : "320px"}
         className="object-cover"
+      />
+    </div>
+  ) : item.mimeType.startsWith("video/") ? (
+    <div
+      className={cn(
+        "relative shrink-0 overflow-hidden bg-muted",
+        compact ? "size-10 rounded-lg" : "aspect-[4/3] w-full",
+      )}
+    >
+      <video
+        src={item.url}
+        muted
+        preload="metadata"
+        controls={!compact}
+        className="size-full object-cover"
+        aria-label={item.altText || item.originalName}
       />
     </div>
   ) : (
