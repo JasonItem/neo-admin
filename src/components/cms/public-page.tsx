@@ -36,17 +36,18 @@ export async function PublicCmsPage({
   site: Site;
   page: { blocks: Block[] };
   navigation: Nav[];
-  pages: Array<{ id: string; slug: string }>;
+  pages: Array<{ id: string; slug: string; isHome: boolean }>;
 }) {
   const [products, articles, cases] = await Promise.all([
     getPublishedContents(site.tenantId, "PRODUCT"),
     getPublishedContents(site.tenantId, "ARTICLE"),
     getPublishedContents(site.tenantId, "CASE"),
   ]);
-  const href = (item: Nav) =>
-    item.linkType === "URL"
-      ? item.url || "#"
-      : `/${pages.find((page) => page.id === item.pageId)?.slug ?? ""}`;
+  const href = (item: Nav) => {
+    if (item.linkType === "URL") return item.url || "#";
+    const page = pages.find((candidate) => candidate.id === item.pageId);
+    return page?.isHome ? "/" : `/${page?.slug ?? ""}`;
+  };
   return (
     <main className="min-h-svh bg-white text-neutral-950">
       <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur">

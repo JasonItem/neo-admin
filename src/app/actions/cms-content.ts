@@ -100,6 +100,12 @@ export async function saveCmsPageAction(input: unknown) {
     publishedAt: data.status === "PUBLISHED" ? new Date() : null,
     createdBy: actor.id,
   };
+  if (data.isHome) {
+    await db
+      .update(cmsPages)
+      .set({ isHome: false })
+      .where(eq(cmsPages.tenantId, actor.tenantId));
+  }
   if (data.id)
     await db
       .update(cmsPages)

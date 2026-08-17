@@ -52,7 +52,11 @@ export default async function Home() {
         site={site}
         page={managedHome}
         navigation={managedNavigation}
-        pages={managedPages.map(({ id, slug }) => ({ id, slug }))}
+        pages={managedPages.map(({ id, slug, isHome }) => ({
+          id,
+          slug,
+          isHome,
+        }))}
       />
     );
   const services = [

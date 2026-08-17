@@ -24,7 +24,11 @@ export default async function Page({
       site={site}
       page={page}
       navigation={navigation}
-      pages={pages.map(({ id, slug: path }) => ({ id, slug: path }))}
+      pages={pages.map(({ id, slug: path, isHome }) => ({
+        id,
+        slug: path,
+        isHome,
+      }))}
     />
   );
 }

@@ -380,12 +380,71 @@ async function main() {
 }
 
 async function seedCmsExamples(userId: string) {
+  const pageHome = "30000000-0000-4000-8000-000000000000";
   const pageAbout = "30000000-0000-4000-8000-000000000001";
   const pageSolutions = "30000000-0000-4000-8000-000000000002";
   const articleCategory = "31000000-0000-4000-8000-000000000001";
   const productCategory = "31000000-0000-4000-8000-000000000002";
   const caseCategory = "31000000-0000-4000-8000-000000000003";
   const pages = [
+    {
+      id: pageHome,
+      title: "企业首页示例",
+      slug: "home",
+      summary: "由页面区块、产品、案例、文章和导航共同驱动的企业官网首页。",
+      status: "PUBLISHED" as const,
+      isHome: true,
+      sortOrder: 0,
+      seoTitle: "NeoAdmin 企业官网",
+      seoDescription: "专业的企业建站、数字体验设计与内容运营解决方案。",
+      createdBy: userId,
+      blocks: [
+        {
+          id: "home-hero",
+          type: "HERO",
+          title: "让企业官网更专业、更清晰、更易维护",
+          content: "用结构化内容呈现品牌价值，让产品、案例和企业动态持续更新。",
+        },
+        {
+          id: "home-about",
+          type: "RICH_TEXT",
+          title: "为企业建立可持续运营的数字门户",
+          content:
+            "NeoAdmin 将页面、导航、媒体、文章、产品与案例统一到一个内容平台。运营人员无需修改代码，即可完成网站日常更新。",
+        },
+        {
+          id: "home-products",
+          type: "PRODUCTS",
+          title: "企业建站产品",
+          content: "根据企业规模和内容运营需求，选择适合的建站方案。",
+        },
+        {
+          id: "home-cases",
+          type: "CASES",
+          title: "客户案例",
+          content: "用真实项目展示我们的策略、设计与技术实施能力。",
+        },
+        {
+          id: "home-articles",
+          type: "ARTICLES",
+          title: "新闻与洞察",
+          content: "了解产品更新、企业动态和内容运营方法。",
+        },
+        {
+          id: "home-contact",
+          type: "CONTACT",
+          title: "联系我们",
+          content:
+            "告诉我们您的业务目标，一起规划更适合企业长期发展的官方网站。",
+        },
+        {
+          id: "home-cta",
+          type: "CTA",
+          title: "开始建设您的企业官网",
+          content: "从清晰的内容结构开始，打造专业、可信赖的数字品牌形象。",
+        },
+      ],
+    },
     {
       id: pageAbout,
       title: "关于我们",
@@ -599,6 +658,13 @@ async function seedCmsExamples(userId: string) {
       .onDuplicateKeyUpdate({ set: { id: content.id } });
 
   const navigations = [
+    {
+      id: "33000000-0000-4000-8000-000000000000",
+      label: "首页",
+      location: "HEADER" as const,
+      pageId: pageHome,
+      sortOrder: 0,
+    },
     {
       id: "33000000-0000-4000-8000-000000000001",
       label: "关于我们",
