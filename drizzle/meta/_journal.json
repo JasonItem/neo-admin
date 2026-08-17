@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1784686003054,
+      "tag": "0000_easy_nekra",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1784693624899,
+      "tag": "0001_real_archangel",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1784705348069,
+      "tag": "0002_young_captain_cross",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1784711364369,
+      "tag": "0003_vengeful_nemesis",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1786949269164,
+      "tag": "0004_overjoyed_marvel_apes",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1786950079412,
+      "tag": "0005_smooth_kronos",
+      "breakpoints": true
+    }
+  ]
+}
