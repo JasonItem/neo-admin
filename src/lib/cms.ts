@@ -3,7 +3,7 @@ import "server-only";
 import { and, desc, eq, isNull } from "drizzle-orm";
 
 import { db } from "@/db";
-import { cmsMedia, cmsSiteSettings } from "@/db/schema";
+import { cmsMedia, cmsSiteSettings, users } from "@/db/schema";
 
 export const DEFAULT_SITE_SETTINGS = {
   siteName: "NeoAdmin 企业官网",
@@ -30,6 +30,19 @@ export async function getPublicSiteSettings() {
 }
 
 export async function getCmsMedia(tenantId: string) {
-  return db.select().from(cmsMedia).where(and(eq(cmsMedia.tenantId, tenantId), isNull(cmsMedia.deletedAt))).orderBy(desc(cmsMedia.createdAt));
+  return db.select({
+    id: cmsMedia.id,
+    originalName: cmsMedia.originalName,
+    mimeType: cmsMedia.mimeType,
+    extension: cmsMedia.extension,
+    size: cmsMedia.size,
+    altText: cmsMedia.altText,
+    createdAt: cmsMedia.createdAt,
+    updatedAt: cmsMedia.updatedAt,
+    uploaderName: users.displayName,
+    uploaderUsername: users.username,
+  }).from(cmsMedia)
+    .leftJoin(users, eq(users.id, cmsMedia.createdBy))
+    .where(and(eq(cmsMedia.tenantId, tenantId), isNull(cmsMedia.deletedAt)))
+    .orderBy(desc(cmsMedia.createdAt));
 }
-

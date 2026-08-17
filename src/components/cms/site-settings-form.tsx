@@ -6,7 +6,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
 
-import { saveCmsSiteSettingsAction } from "@/app/actions/cms";
+import { saveCmsSiteSettingsAction, setCmsLogoAction } from "@/app/actions/cms";
+import { MediaPicker } from "@/components/cms/media-picker";
+import type { MediaAsset } from "@/components/cms/media-types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,14 +17,14 @@ import { Textarea } from "@/components/ui/textarea";
 
 type SiteSettingsValue = {
   siteName: string; companyName: string; slogan: string; description: string; phone: string; email: string;
-  address: string; footerText: string; seoTitle: string; seoDescription: string; enabled: boolean; logoUrl?: string;
+  address: string; footerText: string; seoTitle: string; seoDescription: string; enabled: boolean; logoMediaId?: string; logoUrl?: string;
 };
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <label className="grid gap-1.5 text-sm font-medium">{label}{children}</label>;
 }
 
-export function SiteSettingsForm({ initialValue }: { initialValue: SiteSettingsValue }) {
+export function SiteSettingsForm({ initialValue, mediaItems }: { initialValue: SiteSettingsValue; mediaItems: MediaAsset[] }) {
   const [value, setValue] = React.useState(initialValue);
   const [pending, startTransition] = React.useTransition();
   const set = (key: keyof SiteSettingsValue, next: string | boolean) => setValue((current) => ({ ...current, [key]: next }));
@@ -34,6 +36,11 @@ export function SiteSettingsForm({ initialValue }: { initialValue: SiteSettingsV
       toast.error(error instanceof Error ? error.message : "保存失败");
     }
   });
+  const selectLogo = async (asset: MediaAsset) => {
+    await setCmsLogoAction(asset.id);
+    setValue((current) => ({ ...current, logoMediaId: asset.id, logoUrl: asset.url }));
+    toast.success("网站 Logo 已更新");
+  };
   return <div className="space-y-4">
     <div className="flex justify-end gap-2"><Button variant="outline" nativeButton={false} render={<Link href="/" target="_blank" />}><ExternalLink />预览官网</Button><Button disabled={pending} onClick={save}><Save />{pending ? "保存中…" : "保存设置"}</Button></div>
     <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
@@ -49,7 +56,7 @@ export function SiteSettingsForm({ initialValue }: { initialValue: SiteSettingsV
       </CardContent></Card>
       <div className="space-y-4">
         <Card><CardHeader><CardTitle>网站状态</CardTitle><CardDescription>关闭后官网将显示维护提示，管理后台不受影响。</CardDescription></CardHeader><CardContent><div className="flex items-center justify-between rounded-lg border p-3"><div><p className="font-medium">对外开放</p><p className="text-xs text-muted-foreground">允许访客浏览企业官网</p></div><Switch checked={value.enabled} onCheckedChange={(checked) => set("enabled", checked)} /></div></CardContent></Card>
-        <Card><CardHeader><CardTitle>品牌 Logo</CardTitle><CardDescription>在媒体库上传图片后，可将其设为网站 Logo。</CardDescription></CardHeader><CardContent>{value.logoUrl ? <Image src={value.logoUrl} alt="当前网站 Logo" width={320} height={80} unoptimized className="h-20 max-w-full rounded-lg border bg-muted object-contain p-3" /> : <div className="flex h-20 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">尚未设置 Logo</div>}<Button variant="outline" className="mt-3" nativeButton={false} render={<Link href="/cms/media" />}>前往媒体库</Button></CardContent></Card>
+        <Card><CardHeader><CardTitle>品牌 Logo</CardTitle><CardDescription>可直接从媒体库选择，也可以在选择器中快捷上传并使用。</CardDescription></CardHeader><CardContent>{value.logoUrl ? <Image src={value.logoUrl} alt="当前网站 Logo" width={320} height={80} unoptimized className="h-20 max-w-full rounded-lg border bg-muted object-contain p-3" /> : <div className="flex h-20 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">尚未设置 Logo</div>}<div className="mt-3 flex flex-wrap gap-2"><MediaPicker items={mediaItems} value={value.logoMediaId} onSelect={selectLogo} /><Button variant="ghost" nativeButton={false} render={<Link href="/cms/media" />}>管理媒体库</Button></div></CardContent></Card>
       </div>
     </div>
     <Card><CardHeader><CardTitle>搜索引擎优化</CardTitle><CardDescription>用于浏览器标题和搜索引擎摘要。</CardDescription></CardHeader><CardContent className="grid gap-4">

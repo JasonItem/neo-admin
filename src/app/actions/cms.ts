@@ -28,6 +28,12 @@ const siteSettingsInput = z.object({
   enabled: z.boolean(),
 });
 
+const mediaUpdateInput = z.object({
+  id: z.string().uuid(),
+  originalName: z.string().trim().min(1, "文件名称不能为空").max(255),
+  altText: z.string().trim().max(255).optional().default(""),
+});
+
 const uploadRoot = () => path.join(/* turbopackIgnore: true */ process.cwd(), "data", "uploads");
 const allowedTypes = new Map([
   ["image/jpeg", ".jpg"], ["image/png", ".png"], ["image/webp", ".webp"], ["image/gif", ".gif"],
@@ -84,7 +90,36 @@ export async function uploadCmsMediaAction(formData: FormData) {
   });
   await writeOperationLog({ actorId: actor.id, module: "媒体库", action: "上传媒体文件", resourceType: "cms_media", resourceId: id, method: "POST", path: "/cms/media", success: true, detail: { name: file.name, size: file.size } });
   revalidatePath("/cms/media");
-  return { id };
+  return {
+    id,
+    originalName: file.name.slice(0, 255),
+    mimeType: file.type,
+    size: file.size,
+    altText,
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString(),
+    uploaderName: actor.displayName,
+    uploaderUsername: actor.username,
+    url: `/media/${id}`,
+  };
+}
+
+export async function updateCmsMediaAction(input: unknown) {
+  const parsed = mediaUpdateInput.parse(input);
+  const actor = await requirePermission(PERMISSIONS.cmsMediaUpdate);
+  const [media] = await db.select({ id: cmsMedia.id }).from(cmsMedia).where(and(
+    eq(cmsMedia.id, parsed.id),
+    eq(cmsMedia.tenantId, actor.tenantId),
+    isNull(cmsMedia.deletedAt),
+  )).limit(1);
+  if (!media) throw new Error("文件不存在或已删除");
+  await db.update(cmsMedia).set({
+    originalName: parsed.originalName,
+    altText: parsed.altText || null,
+  }).where(eq(cmsMedia.id, media.id));
+  await writeOperationLog({ actorId: actor.id, module: "媒体库", action: "更新媒体信息", resourceType: "cms_media", resourceId: media.id, method: "PUT", path: "/cms/media", success: true });
+  revalidatePath("/cms/media");
+  revalidatePath("/cms/site");
 }
 
 export async function setCmsLogoAction(mediaId: string) {
