@@ -23,6 +23,7 @@
 
 # production
 /build
+/data/uploads/
 
 # misc
 .DS_Store

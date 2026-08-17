@@ -38,6 +38,8 @@ const pageNames: Record<string, string> = {
   "/system/organizations": "组织管理",
   "/system/operation-logs": "操作日志",
   "/system/login-logs": "登录日志",
+  "/cms/site": "站点设置",
+  "/cms/media": "媒体库",
   "/account/profile": "账户设置",
   "/account/password": "账户设置",
 };

@@ -1,5 +1,11 @@
 export const PERMISSIONS = {
   dashboardView: "dashboard:view",
+  cmsSiteList: "cms:site:list",
+  cmsSiteUpdate: "cms:site:update",
+  cmsMediaList: "cms:media:list",
+  cmsMediaUpload: "cms:media:upload",
+  cmsMediaUpdate: "cms:media:update",
+  cmsMediaDelete: "cms:media:delete",
   userList: "system:user:list",
   userCreate: "system:user:create",
   userUpdate: "system:user:update",
@@ -27,6 +33,12 @@ export type PermissionCode = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
 export const PERMISSION_NAMES: Record<PermissionCode, string> = {
   [PERMISSIONS.dashboardView]: "查看数据概览",
+  [PERMISSIONS.cmsSiteList]: "查看站点设置",
+  [PERMISSIONS.cmsSiteUpdate]: "修改站点设置",
+  [PERMISSIONS.cmsMediaList]: "查看媒体库",
+  [PERMISSIONS.cmsMediaUpload]: "上传媒体文件",
+  [PERMISSIONS.cmsMediaUpdate]: "修改媒体信息",
+  [PERMISSIONS.cmsMediaDelete]: "删除媒体文件",
   [PERMISSIONS.userList]: "查看用户列表",
   [PERMISSIONS.userCreate]: "新增用户",
   [PERMISSIONS.userUpdate]: "修改用户",

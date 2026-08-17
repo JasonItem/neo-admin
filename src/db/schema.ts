@@ -8,6 +8,7 @@ import {
   mysqlEnum,
   mysqlTable,
   primaryKey,
+  text,
   uniqueIndex,
   varchar,
 } from "drizzle-orm/mysql-core";
@@ -164,6 +165,44 @@ export const loginLogs = mysqlTable("login_logs", {
   userAgent: varchar("user_agent", { length: 500 }),
   createdAt: datetime("created_at", { mode: "date" }).notNull().default(sql`CURRENT_TIMESTAMP`),
 }, (table) => [index("login_logs_user_idx").on(table.userId), index("login_logs_created_idx").on(table.createdAt)]);
+
+export const cmsSiteSettings = mysqlTable("cms_site_settings", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  tenantId: varchar("tenant_id", { length: 36 }).notNull(),
+  siteName: varchar("site_name", { length: 120 }).notNull(),
+  companyName: varchar("company_name", { length: 160 }).notNull(),
+  slogan: varchar("slogan", { length: 255 }),
+  description: text("description"),
+  logoMediaId: varchar("logo_media_id", { length: 36 }),
+  phone: varchar("phone", { length: 50 }),
+  email: varchar("email", { length: 255 }),
+  address: varchar("address", { length: 500 }),
+  footerText: varchar("footer_text", { length: 500 }),
+  seoTitle: varchar("seo_title", { length: 255 }),
+  seoDescription: varchar("seo_description", { length: 500 }),
+  enabled: boolean("enabled").notNull().default(true),
+  ...timestamps,
+}, (table) => [uniqueIndex("cms_site_settings_tenant_uidx").on(table.tenantId)]);
+
+export const cmsMedia = mysqlTable("cms_media", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  tenantId: varchar("tenant_id", { length: 36 }).notNull(),
+  organizationId: varchar("organization_id", { length: 36 }).notNull(),
+  originalName: varchar("original_name", { length: 255 }).notNull(),
+  storageName: varchar("storage_name", { length: 255 }).notNull(),
+  relativePath: varchar("relative_path", { length: 1000 }).notNull(),
+  mimeType: varchar("mime_type", { length: 120 }).notNull(),
+  extension: varchar("extension", { length: 20 }).notNull(),
+  size: bigint("size", { mode: "number", unsigned: true }).notNull(),
+  altText: varchar("alt_text", { length: 255 }),
+  createdBy: varchar("created_by", { length: 36 }).notNull(),
+  deletedAt: datetime("deleted_at", { mode: "date" }),
+  ...timestamps,
+}, (table) => [
+  index("cms_media_tenant_idx").on(table.tenantId),
+  index("cms_media_org_idx").on(table.organizationId),
+  index("cms_media_created_idx").on(table.createdAt),
+]);
 
 export type DataScope = typeof roles.$inferSelect.defaultDataScope;
 export type MenuItem = typeof menuItems.$inferSelect;

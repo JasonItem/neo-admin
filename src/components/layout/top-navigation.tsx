@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Boxes, Building2, ChevronDown, ChevronsUpDown, CircleGauge, FileClock, MenuSquare, MoreHorizontal, Plus, Settings2, ShieldCheck, Users, type LucideIcon } from "lucide-react";
+import { Boxes, Building2, ChevronDown, ChevronsUpDown, CircleGauge, FileClock, Globe2, Images, MenuSquare, MoreHorizontal, Plus, Settings2, ShieldCheck, Users, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel,
@@ -14,7 +14,7 @@ import type { NavigationItem } from "@/lib/navigation";
 import type { AdminWorkspace } from "@/lib/workspaces";
 import { cn } from "@/lib/utils";
 
-const icons: Record<string, LucideIcon> = { CircleGauge, ShieldCheck, Users, MenuSquare, Building2, FileClock };
+const icons: Record<string, LucideIcon> = { CircleGauge, ShieldCheck, Users, MenuSquare, Building2, FileClock, Globe2, Images };
 const iconFor = (item: NavigationItem) => icons[item.icon ?? ""] ?? ShieldCheck;
 const renderIcon = (item: NavigationItem) => React.createElement(iconFor(item), { className: "size-4" });
 const containsPath = (item: NavigationItem, pathname: string): boolean => item.path === pathname || item.children.some((child) => containsPath(child, pathname));

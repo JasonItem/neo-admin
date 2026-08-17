@@ -47,7 +47,9 @@ export async function getWorkspaceExperience(user: AuthUser) {
     : [];
   const authorizedSet = new Set(authorizedMenuIds);
   const result: AdminWorkspace[] = rows.map((workspace) => {
-    const menuItemIds = links.filter((item) => item.workspaceId === workspace.id && authorizedSet.has(item.menuItemId)).map((item) => item.menuItemId);
+    const menuItemIds = workspace.isDefault
+      ? authorizedMenuIds
+      : links.filter((item) => item.workspaceId === workspace.id && authorizedSet.has(item.menuItemId)).map((item) => item.menuItemId);
     return { ...workspace, menuItemIds, navigation: filterNavigation(navigation, new Set(menuItemIds)) };
   });
 

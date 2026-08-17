@@ -1,13 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_ROUTES = ["/login"];
+const PUBLIC_ROUTES = ["/", "/login", "/media"];
 
 export function proxy(request: NextRequest) {
   if (process.env.APP_DEMO_MODE === "true") return NextResponse.next();
   const pathname = request.nextUrl.pathname;
   const cookieName = process.env.SESSION_COOKIE_NAME ?? "neoadmin_session";
   const hasSessionCookie = Boolean(request.cookies.get(cookieName)?.value);
-  if (!hasSessionCookie && !PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
+  const isPublicRoute = pathname === "/" || PUBLIC_ROUTES.slice(1).some((route) => pathname.startsWith(route));
+  if (!hasSessionCookie && !isPublicRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
   return NextResponse.next();

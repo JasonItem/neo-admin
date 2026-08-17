@@ -43,6 +43,13 @@
       "when": 1786950079412,
       "tag": "0005_smooth_kronos",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1786955626004,
+      "tag": "0006_shocking_fat_cobra",
+      "breakpoints": true
     }
   ]
 }

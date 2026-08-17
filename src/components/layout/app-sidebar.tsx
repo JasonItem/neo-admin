@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Building2, CircleGauge, FileClock, MenuSquare, ShieldCheck, Users } from "lucide-react";
+import { Building2, CircleGauge, FileClock, Globe2, Images, MenuSquare, ShieldCheck, Users } from "lucide-react";
 import { useDemoStore } from "@/components/demo/demo-store";
 import { NavMain } from "@/components/layout/nav-main";
 import { NavUser } from "@/components/layout/nav-user";
@@ -23,6 +23,8 @@ const icons = {
   MenuSquare,
   Building2,
   FileClock,
+  Globe2,
+  Images,
 };
 export function AppSidebar({
   items,

@@ -18,6 +18,9 @@ const ids = {
   admin: "00000000-0000-4000-8000-000000000002",
   role: "00000000-0000-4000-8000-000000000003",
   dashboard: "10000000-0000-4000-8000-000000000001",
+  cms: "10000000-0000-4000-8000-000000000009",
+  cmsSite: "10000000-0000-4000-8000-000000000010",
+  cmsMedia: "10000000-0000-4000-8000-000000000011",
   system: "10000000-0000-4000-8000-000000000002",
   users: "10000000-0000-4000-8000-000000000003",
   roles: "10000000-0000-4000-8000-000000000004",
@@ -41,7 +44,10 @@ async function main() {
 
   const definitions = [
     { id: ids.dashboard, name: "数据概览", type: "MENU" as const, path: "/dashboard", icon: "CircleGauge", permissionCode: PERMISSIONS.dashboardView, sortOrder: 1 },
-    { id: ids.system, name: "权限管理", type: "DIRECTORY" as const, path: null, icon: "ShieldCheck", permissionCode: null, sortOrder: 2 },
+    { id: ids.cms, name: "网站管理", type: "DIRECTORY" as const, path: null, icon: "Globe2", permissionCode: null, sortOrder: 2 },
+    { id: ids.cmsSite, parentId: ids.cms, name: "站点设置", type: "MENU" as const, path: "/cms/site", icon: "Globe2", permissionCode: PERMISSIONS.cmsSiteList, sortOrder: 1 },
+    { id: ids.cmsMedia, parentId: ids.cms, name: "媒体库", type: "MENU" as const, path: "/cms/media", icon: "Images", permissionCode: PERMISSIONS.cmsMediaList, sortOrder: 2 },
+    { id: ids.system, name: "权限管理", type: "DIRECTORY" as const, path: null, icon: "ShieldCheck", permissionCode: null, sortOrder: 3 },
     { id: ids.users, parentId: ids.system, name: "用户管理", type: "MENU" as const, path: "/system/users", icon: "Users", permissionCode: PERMISSIONS.userList, sortOrder: 1 },
     { id: ids.roles, parentId: ids.system, name: "角色管理", type: "MENU" as const, path: "/system/roles", icon: "ShieldCheck", permissionCode: PERMISSIONS.roleList, sortOrder: 2 },
     { id: ids.menus, parentId: ids.system, name: "菜单管理", type: "MENU" as const, path: "/system/menus", icon: "MenuSquare", permissionCode: PERMISSIONS.menuList, sortOrder: 3 },
@@ -50,6 +56,8 @@ async function main() {
     { id: ids.loginLogs, parentId: ids.system, name: "登录日志", type: "MENU" as const, path: "/system/login-logs", icon: "FileClock", permissionCode: PERMISSIONS.loginLogList, sortOrder: 6 },
   ];
   const buttonParents = [
+    [ids.cmsSite, [PERMISSIONS.cmsSiteUpdate]],
+    [ids.cmsMedia, [PERMISSIONS.cmsMediaUpload, PERMISSIONS.cmsMediaUpdate, PERMISSIONS.cmsMediaDelete]],
     [ids.users, [PERMISSIONS.userCreate, PERMISSIONS.userUpdate, PERMISSIONS.userDelete]],
     [ids.roles, [PERMISSIONS.roleCreate, PERMISSIONS.roleUpdate, PERMISSIONS.roleDelete, PERMISSIONS.roleGrant]],
     [ids.menus, [PERMISSIONS.menuCreate, PERMISSIONS.menuUpdate, PERMISSIONS.menuDelete]],
@@ -66,7 +74,7 @@ async function main() {
     const menuItemId = existingMenuItem?.id ?? definition.id;
 
     await db.insert(menuItems).values({ ...definition, id: menuItemId }).onDuplicateKeyUpdate({
-      set: { name: definition.name, permissionCode: definition.permissionCode },
+      set: { name: definition.name, parentId: definition.parentId ?? null, path: definition.path, icon: definition.icon, permissionCode: definition.permissionCode, sortOrder: definition.sortOrder, visible: "visible" in definition ? definition.visible : true },
     });
     await db.insert(roleMenuItems).values({ roleId: ids.role, menuItemId, dataScope: "PLATFORM" }).onDuplicateKeyUpdate({
       set: { dataScope: "PLATFORM" },
