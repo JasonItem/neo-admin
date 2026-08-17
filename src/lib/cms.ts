@@ -159,3 +159,23 @@ export const getPublishedContents = (
     )
     .orderBy(cmsContents.sortOrder, desc(cmsContents.publishedAt))
     .limit(limit);
+
+export async function getPublishedContent(
+  tenantId: string,
+  kind: "ARTICLE" | "PRODUCT" | "CASE",
+  slug: string,
+) {
+  const [content] = await db
+    .select()
+    .from(cmsContents)
+    .where(
+      and(
+        eq(cmsContents.tenantId, tenantId),
+        eq(cmsContents.kind, kind),
+        eq(cmsContents.slug, slug),
+        eq(cmsContents.status, "PUBLISHED" as const),
+      ),
+    )
+    .limit(1);
+  return content;
+}

@@ -123,6 +123,7 @@ function PublicBlock({
   items: Array<{
     id: string;
     title: string;
+    slug: string;
     summary: string | null;
     coverMediaId: string | null;
   }>;
@@ -153,28 +154,43 @@ function PublicBlock({
         <h2 className="text-4xl font-semibold">{block.title}</h2>
         <p className="mt-3 text-neutral-600">{block.content}</p>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {items.map((item) => (
-            <article
-              key={item.id}
-              className="overflow-hidden rounded-2xl border"
-            >
-              {item.coverMediaId && (
-                <div className="relative aspect-video">
-                  <Image
-                    src={`/media/${item.coverMediaId}`}
-                    alt={item.title}
-                    fill
-                    unoptimized
-                    className="object-cover"
-                  />
-                </div>
-              )}
-              <div className="p-5">
-                <h3 className="text-xl font-medium">{item.title}</h3>
-                <p className="mt-2 text-neutral-600">{item.summary}</p>
-              </div>
-            </article>
-          ))}
+          {items.map((item) => {
+            const section =
+              block.type === "PRODUCTS"
+                ? "products"
+                : block.type === "ARTICLES"
+                  ? "articles"
+                  : "cases";
+            return (
+              <Link
+                key={item.id}
+                href={`/${section}/${item.slug}`}
+                className="group overflow-hidden rounded-2xl border transition hover:-translate-y-1 hover:border-neutral-400 hover:shadow-lg"
+              >
+                <article>
+                  {item.coverMediaId && (
+                    <div className="relative aspect-video overflow-hidden">
+                      <Image
+                        src={`/media/${item.coverMediaId}`}
+                        alt={item.title}
+                        fill
+                        unoptimized
+                        className="object-cover transition duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                  )}
+                  <div className="p-5">
+                    <h3 className="text-xl font-medium">{item.title}</h3>
+                    <p className="mt-2 text-neutral-600">{item.summary}</p>
+                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium">
+                      查看详情
+                      <ArrowRight className="size-4 transition group-hover:translate-x-1" />
+                    </span>
+                  </div>
+                </article>
+              </Link>
+            );
+          })}
         </div>
       </section>
     );
