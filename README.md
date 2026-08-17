@@ -2,6 +2,20 @@
 
 NeoAdmin 是一个基于 Next.js、MySQL 和 Drizzle ORM 构建的现代化后台管理系统，提供完整的 RBAC 权限控制、组织数据范围、可配置工作区以及响应式双布局。
 
+## 界面预览
+
+### 登录页面
+
+![NeoAdmin 登录页面](./public/readme/login.png)
+
+### 顶部菜单布局
+
+![NeoAdmin 顶部菜单数据概览](./public/readme/dashboard-top.png)
+
+### 左侧菜单与角色权限
+
+![NeoAdmin 左侧菜单角色管理](./public/readme/roles-sidebar.png)
+
 ## 功能特性
 
 - 用户、角色、菜单、组织、操作日志和登录日志管理
