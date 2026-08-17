@@ -5,6 +5,10 @@ import { existsSync } from "node:fs";
 import { loadEnvFile } from "node:process";
 import mysql from "mysql2/promise";
 import {
+  cmsCategories,
+  cmsContents,
+  cmsNavigations,
+  cmsPages,
   menuItems,
   organizations,
   roleMenuItems,
@@ -90,16 +94,14 @@ async function main() {
     .limit(1);
   const userId = existing?.id ?? ids.admin;
   if (!existing)
-    await db
-      .insert(users)
-      .values({
-        id: userId,
-        tenantId: ids.org,
-        organizationId: ids.org,
-        username,
-        passwordHash: await hash(password, 12),
-        displayName,
-      });
+    await db.insert(users).values({
+      id: userId,
+      tenantId: ids.org,
+      organizationId: ids.org,
+      username,
+      passwordHash: await hash(password, 12),
+      displayName,
+    });
   await db
     .insert(userRoles)
     .values({
@@ -372,8 +374,281 @@ async function main() {
         set: { dataScope: "PLATFORM" },
       });
   }
+  await seedCmsExamples(userId);
   console.log(`初始化完成。管理员账号：${username}`);
   await pool.end();
+}
+
+async function seedCmsExamples(userId: string) {
+  const pageAbout = "30000000-0000-4000-8000-000000000001";
+  const pageSolutions = "30000000-0000-4000-8000-000000000002";
+  const articleCategory = "31000000-0000-4000-8000-000000000001";
+  const productCategory = "31000000-0000-4000-8000-000000000002";
+  const caseCategory = "31000000-0000-4000-8000-000000000003";
+  const pages = [
+    {
+      id: pageAbout,
+      title: "关于我们",
+      slug: "about",
+      summary: "了解我们的团队、使命与企业服务能力。",
+      status: "PUBLISHED" as const,
+      isHome: false,
+      sortOrder: 1,
+      seoTitle: "关于我们 - NeoAdmin",
+      seoDescription: "NeoAdmin 企业介绍与服务能力。",
+      createdBy: userId,
+      blocks: [
+        {
+          id: "about-hero",
+          type: "HERO",
+          title: "用数字体验连接品牌与客户",
+          content:
+            "我们专注企业网站建设与长期内容运营，帮助企业建立可信赖的线上形象。",
+        },
+        {
+          id: "about-intro",
+          type: "RICH_TEXT",
+          title: "关于 NeoAdmin",
+          content:
+            "从信息架构、视觉设计到内容管理，我们提供覆盖企业建站全生命周期的服务。\n\n后台采用结构化内容管理，让运营人员无需修改代码即可持续更新网站。",
+        },
+        {
+          id: "about-features",
+          type: "FEATURES",
+          title: "我们的优势",
+          content:
+            "清晰的信息架构、可复用的媒体资源、可靠的权限管理与灵活的内容发布。",
+        },
+        {
+          id: "about-cta",
+          type: "CTA",
+          title: "准备好升级您的企业官网吗？",
+          content: "与我们沟通您的业务目标，一起规划更专业的数字门户。",
+        },
+      ],
+    },
+    {
+      id: pageSolutions,
+      title: "解决方案",
+      slug: "solutions",
+      summary: "企业建站、产品展示与内容运营解决方案。",
+      status: "PUBLISHED" as const,
+      isHome: false,
+      sortOrder: 2,
+      seoTitle: "企业建站解决方案",
+      seoDescription: "面向企业官网的数字化建站与内容运营方案。",
+      createdBy: userId,
+      blocks: [
+        {
+          id: "solutions-hero",
+          type: "HERO",
+          title: "适合企业长期运营的网站解决方案",
+          content: "不仅完成一次上线，更让内容、产品和案例能够持续成长。",
+        },
+        {
+          id: "solutions-products",
+          type: "PRODUCTS",
+          title: "核心产品",
+          content: "围绕企业不同阶段提供灵活的建站产品。",
+        },
+        {
+          id: "solutions-cases",
+          type: "CASES",
+          title: "客户案例",
+          content: "从真实项目中了解我们的实施能力。",
+        },
+        {
+          id: "solutions-news",
+          type: "ARTICLES",
+          title: "最新动态",
+          content: "关注产品更新与企业数字化实践。",
+        },
+      ],
+    },
+  ];
+  for (const page of pages)
+    await db
+      .insert(cmsPages)
+      .values({
+        ...page,
+        tenantId: ids.org,
+        coverMediaId: null,
+        publishedAt: new Date(),
+      })
+      .onDuplicateKeyUpdate({ set: { id: page.id } });
+
+  const categories = [
+    {
+      id: articleCategory,
+      kind: "ARTICLE" as const,
+      name: "企业动态",
+      slug: "company-news",
+      description: "公司新闻与产品更新",
+      sortOrder: 1,
+    },
+    {
+      id: productCategory,
+      kind: "PRODUCT" as const,
+      name: "建站产品",
+      slug: "website-products",
+      description: "企业建站相关产品",
+      sortOrder: 1,
+    },
+    {
+      id: caseCategory,
+      kind: "CASE" as const,
+      name: "客户案例",
+      slug: "customer-cases",
+      description: "企业网站建设案例",
+      sortOrder: 1,
+    },
+  ];
+  for (const category of categories)
+    await db
+      .insert(cmsCategories)
+      .values({ ...category, tenantId: ids.org, parentId: null, enabled: true })
+      .onDuplicateKeyUpdate({ set: { id: category.id } });
+
+  const contents = [
+    {
+      id: "32000000-0000-4000-8000-000000000001",
+      kind: "ARTICLE" as const,
+      categoryId: articleCategory,
+      title: "企业官网内容管理的五个关键原则",
+      slug: "five-cms-principles",
+      summary:
+        "从内容结构、媒体复用、发布流程、SEO 和权限管理出发，建立可长期维护的企业官网。",
+      body: "企业官网不是一次性交付物，而是一套持续运营的内容系统。结构化页面、统一媒体库、清晰的发布状态、完整的 SEO 字段和按角色分配的权限，是长期维护的基础。",
+    },
+    {
+      id: "32000000-0000-4000-8000-000000000002",
+      kind: "ARTICLE" as const,
+      categoryId: articleCategory,
+      title: "NeoAdmin CMS 内容模块正式上线",
+      slug: "cms-content-release",
+      summary: "页面、导航、文章、产品和案例模块现已可以统一管理。",
+      body: "本次更新新增企业建站所需的核心内容能力，运营人员可以在后台创建页面、组合区块并发布内容。",
+    },
+    {
+      id: "32000000-0000-4000-8000-000000000003",
+      kind: "PRODUCT" as const,
+      categoryId: productCategory,
+      title: "企业官网标准版",
+      slug: "corporate-website-standard",
+      summary:
+        "适合成长型企业的响应式官网，包含品牌展示、产品、新闻、案例和联系页面。",
+      body: "标准版提供完整的企业官网内容结构和自主维护后台。",
+      attributes: {
+        交付周期: "15-20 个工作日",
+        适用企业: "成长型企业",
+        终端支持: "电脑、平板、手机",
+      },
+    },
+    {
+      id: "32000000-0000-4000-8000-000000000004",
+      kind: "PRODUCT" as const,
+      categoryId: productCategory,
+      title: "企业官网专业版",
+      slug: "corporate-website-pro",
+      summary: "适合具有多业务线和大量内容运营需求的企业。",
+      body: "专业版支持更复杂的栏目、内容模型和精细化权限配置。",
+      attributes: {
+        交付周期: "25-35 个工作日",
+        适用企业: "集团与多业务企业",
+        内容规模: "中大型",
+      },
+    },
+    {
+      id: "32000000-0000-4000-8000-000000000005",
+      kind: "CASE" as const,
+      categoryId: caseCategory,
+      title: "智能制造企业官网升级",
+      slug: "smart-manufacturing-case",
+      summary: "重构品牌信息架构和产品中心，让海外客户更快理解企业能力。",
+      body: "项目围绕品牌升级、产品分类、案例展示和多终端体验完成整体改版。",
+    },
+    {
+      id: "32000000-0000-4000-8000-000000000006",
+      kind: "CASE" as const,
+      categoryId: caseCategory,
+      title: "科技服务公司内容门户",
+      slug: "technology-service-case",
+      summary: "通过结构化内容和统一媒体库降低日常运营成本。",
+      body: "上线后市场团队可以独立维护新闻、解决方案与客户案例。",
+    },
+  ];
+  for (const content of contents)
+    await db
+      .insert(cmsContents)
+      .values({
+        ...content,
+        attributes: ("attributes" in content
+          ? content.attributes
+          : {}) as Record<string, string>,
+        tenantId: ids.org,
+        coverMediaId: null,
+        galleryMediaIds: [],
+        featured: true,
+        status: "PUBLISHED",
+        sortOrder: 1,
+        seoTitle: content.title,
+        seoDescription: content.summary,
+        publishedAt: new Date(),
+        createdBy: userId,
+      })
+      .onDuplicateKeyUpdate({ set: { id: content.id } });
+
+  const navigations = [
+    {
+      id: "33000000-0000-4000-8000-000000000001",
+      label: "关于我们",
+      location: "HEADER" as const,
+      pageId: pageAbout,
+      sortOrder: 1,
+    },
+    {
+      id: "33000000-0000-4000-8000-000000000002",
+      label: "解决方案",
+      location: "HEADER" as const,
+      pageId: pageSolutions,
+      sortOrder: 2,
+    },
+    {
+      id: "33000000-0000-4000-8000-000000000003",
+      label: "关于我们",
+      location: "FOOTER" as const,
+      pageId: pageAbout,
+      sortOrder: 1,
+    },
+    {
+      id: "33000000-0000-4000-8000-000000000004",
+      label: "解决方案",
+      location: "FOOTER" as const,
+      pageId: pageSolutions,
+      sortOrder: 2,
+    },
+    {
+      id: "33000000-0000-4000-8000-000000000005",
+      label: "服务能力",
+      location: "HEADER" as const,
+      pageId: pageSolutions,
+      parentId: "33000000-0000-4000-8000-000000000002",
+      sortOrder: 1,
+    },
+  ];
+  for (const navigation of navigations)
+    await db
+      .insert(cmsNavigations)
+      .values({
+        parentId: null,
+        ...navigation,
+        tenantId: ids.org,
+        linkType: "PAGE",
+        url: null,
+        target: "SELF",
+        enabled: true,
+      })
+      .onDuplicateKeyUpdate({ set: { id: navigation.id } });
 }
 
 main()
