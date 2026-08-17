@@ -10,6 +10,7 @@ import {
 import { ImagePicker } from "@/components/cms/media-picker";
 import { CmsFormField, CmsPickerField } from "@/components/cms/cms-form-field";
 import type { MediaAsset } from "@/components/cms/media-types";
+import { RichTextEditor } from "@/components/cms/rich-text-editor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -295,16 +296,18 @@ export function ContentManager({
               </CmsFormField>
               <CmsFormField
                 label={`${label}正文`}
-                description={`访客打开${label}详情页后阅读的完整内容。`}
+                description={`访客打开${label}详情页后阅读的完整内容；可设置标题、列表和链接，也可直接插入媒体库图片或文件。`}
                 className="sm:col-span-2"
               >
-                <Textarea
-                  rows={10}
-                  placeholder="正文内容"
+                <RichTextEditor
                   value={editing.body}
-                  onChange={(e) =>
-                    setEditing({ ...editing, body: e.target.value })
+                  onChange={(body) =>
+                    setEditing((current) =>
+                      current ? { ...current, body } : current,
+                    )
                   }
+                  mediaItems={mediaItems}
+                  label={label}
                 />
               </CmsFormField>
               <CmsPickerField
